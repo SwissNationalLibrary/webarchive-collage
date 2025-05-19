@@ -1,0 +1,10 @@
+node_modules/
+data/
+docker-compose.override.yml
+compose.override.yaml
+.idea
+.css.map
+.js.map
+.DS_Store
+.sync*
+
