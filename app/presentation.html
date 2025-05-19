@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<body>
+<!-- controller.html -->
+<button id="presentBtn" style="display: none;">Present</button>
+<script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+
+<script>
+  // The Present button is visible if at least one presentation display is available
+  var presentBtn = document.getElementById("presentBtn");
+  // It is also possible to use relative presentation URL e.g. "presentation.html"
+  var presUrls = ["http://example.com/presentation.html",
+                  "http://example.net/alternate.html"];
+  // show or hide present button depending on display availability
+  var handleAvailabilityChange = function(available) {
+    presentBtn.style.display = available ? "inline" : "none";
+  };
+  // Promise is resolved as soon as the presentation display availability is
+  // known.
+  var request = new PresentationRequest(presUrls);
+  request.getAvailability().then(function(availability) {
+    // availability.value may be kept up-to-date by the controlling UA as long
+    // as the availability object is alive. It is advised for the web developers
+    // to discard the object as soon as it's not needed.
+    handleAvailabilityChange(availability.value);
+    console.log(availability);
+    availability.onchange = function() { handleAvailabilityChange(this.value); };
+  }).catch(function() {
+    // Availability monitoring is not supported by the platform, so discovery of
+    // presentation displays will happen only after request.start() is called.
+    // Pretend the devices are available for simplicity; or, one could implement
+    // a third state for the button.
+    handleAvailabilityChange(true);
+  });
+
+const presentationRequest = new PresentationRequest('http://www.google.ch');
+presentationRequest.getAvailability()
+.then(availability => {
+  console.log('Available presentation displays: ' + availability.value);
+  availability.addEventListener('change', function() {
+    console.log('> Available presentation displays: ' + availability.value);
+  });
+})
+.catch(error => {
+  console.log('Presentation availability not supported, ' + error.name + ': ' +
+      error.message);
+});
+</script>
+<script>
+window['__onGCastApiAvailable'] = function(isAvailable) {
+  if (isAvailable) {
+    initializeCastApi();
+  }
+};
+initializeCastApi = function() {
+  cast.framework.CastContext.getInstance().setOptions({
+    receiverApplicationId: '123',
+    autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+  });
+};
+</script>
+cl:
+<google-cast-launcher></google-cast-launcher>
+</body>
+</html>
+

@@ -1,0 +1,2 @@
+# sync e-helvetica collage
+01 01 * * 0 cronuser /bin/sync-collage.sh > /target/data/logs/cron/sync-collage.log 2>&1

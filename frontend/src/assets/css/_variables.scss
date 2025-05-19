@@ -1,0 +1,19 @@
+$color-white: #fff;
+$color-black: #000;
+$color-dark: #333;
+$color-red: #dc0018;
+$color-blue: #069;
+$color-red-dark: mix($color-black, $color-red, 15%);
+$font-main: 'Frutiger LT';
+
+@function get-dash-value($radius, $percentage) {
+  // Using $radius, calculate circumference.
+  $circumference: 2 * 3.1415927 * $radius;
+
+  // Convert percentage to decimal.
+  // i.e. 50% = 0.5.
+  $percentage-as-decimal: $percentage / 100%;
+
+  // Return unit value.
+  @return $circumference * $percentage-as-decimal;
+}

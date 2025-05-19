@@ -1,0 +1,74 @@
+.dialog-container,
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.dialog-container {
+  z-index: 2;
+  display: flex;
+}
+
+.dialog-container[aria-hidden='true'] {
+  display: none;
+}
+
+.dialog-overlay {
+  background-color: rgb(43 46 56 / 0.9);
+}
+
+.dialog-content {
+  margin: auto;
+  z-index: 2;
+  position: relative;
+  background-color: white;
+}
+
+.dialog-container {
+  border: 0;
+  padding: 1em 2em 2em 2em;
+  box-shadow: 0 0 4em rgba($color-black, 0.4);
+
+  .app-login__close {
+    display: none;
+  }
+}
+
+.dialog-container[aria-hidden='true'] {
+  display: none;
+}
+
+.dialog-container {
+  position: absolute;
+  background-color: $color-white;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  width: auto;
+  height: auto;
+  z-index: 99;
+  max-width: 45em;
+
+  // &:before {
+  //   position: fixed;
+  //   z-index: 99;
+  //   content: '';
+  //   left: 0;
+  //   top: 0;
+  //   right: 0;
+  //   bottom: 0;
+  //   background-color: rgba($color-black, 0.8);
+  // }
+}
+
+.app-login__close {
+  appearance: none;
+  background: none;
+  font-weight: bold;
+  padding: 0.75em 1.5em;
+  border: 0;
+  cursor: pointer;
+}

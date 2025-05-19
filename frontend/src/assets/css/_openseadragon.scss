@@ -1,0 +1,67 @@
+.openseadragon-container {
+  width: 100%;
+  height: 100%;
+  user-select: none;
+}
+
+.openseadragon-canvas {
+  cursor: move;
+}
+
+.viewer-select {
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+
+  &:hover {
+    > .button {
+      fill: $color-red-dark;
+    }
+  }
+
+  > .button-group {
+    // stroke: rgba(#fff, .5);
+    // stroke-width: 48px;
+    transition: transform 0.2s cubic-bezier(0.44, 0.31, 0.29, 1.37);
+    transform: scale(1);
+
+    > .button {
+      fill: $color-red;
+    }
+
+    > .button-circle {
+      fill: rgba(#fff, 0.3);
+    }
+
+    &:active,
+    &:hover {
+      transition: transform 0.2s cubic-bezier(0.44, 0.31, 0.29, 1.37);
+
+      transform: scale(1.1);
+    }
+  }
+
+  > text {
+    fill: $color-white;
+  }
+
+  .overlay-bg {
+    fill: rgba($color-black, 0.2);
+    stroke: #fff; //$color-red;
+    stroke-width: 1em;
+    pointer-events: none;
+  }
+}
+
+.viewer-select--hidden {
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+  pointer-events: none;
+}
+
+#search-overlay {
+  //stroke-width: 400px;
+  //stroke: white;
+  opacity: 0.65;
+  //fill: rgba(0,0,0,0.5);
+}

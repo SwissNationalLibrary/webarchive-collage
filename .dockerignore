@@ -1,0 +1,10 @@
+.env
+docker
+node_modules
+.gitignore
+docker-compose.yml
+docker-compose*
+compose.override.yaml
+data
+*.jpg
+*.png

@@ -1,0 +1,13 @@
+$font-main: 'Frutiger LT';
+@font-face {
+  font-family: $font-main;
+  src: url('../fonts/FrutigerNeueW02-Regular.woff2') format('woff2'), url('../fonts/FrutigerNeueW02-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: $font-main;
+  src: url('../fonts/FrutigerNeueW02-Bd.woff2') format('woff2'), url('../fonts/FrutigerNeueW02-Bd.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+}

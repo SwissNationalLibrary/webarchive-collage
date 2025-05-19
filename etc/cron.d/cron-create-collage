@@ -1,0 +1,2 @@
+# create e-helvetica collage
+21 21 * * 6 cronuser /bin/update-collage.sh > /data/logs/cron/update-collage.log 2>&1

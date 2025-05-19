@@ -1,0 +1,80 @@
+services:
+  app:
+    init: true
+    build:
+      dockerfile: .docker/app/Dockerfile
+      context: .
+    image: registry.gitlab.com/nx-clients/nb/e-helvetica-access/webarchive-collage/env-test/app:latest
+    volumes:
+      - ./app:/dist/app
+      - ./data:/data
+      - ./etc/config.env-test.js:/dist/app/conf/index.js
+      - ./etc/cantaloupe/delegate-ratios.conf:/config/delegate-ratios.conf
+    tmpfs:
+      - /tmp:exec,mode=1777
+
+  nginx:
+    image: nginx:mainline-alpine
+    depends_on:
+      - app
+    volumes:
+      - ./etc/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./data/public:/var/www/data
+      - ./data/collages:/var/www/collages
+      - ./data/nginx/cache:/var/cache/nginx
+      - ./frontend/dist:/var/www/html
+    restart: unless-stopped
+    labels:
+      traefik.http.routers.ehelvetica-collage.rule: Host(${HOSTNAME_TRAEFIK_SAN}) && PathPrefix(`/collage`)
+      traefik.http.routers.ehelvetica-collage.entrypoints: web
+      traefik.http.routers.ehelvetica-collage.priority: 500
+      traefik.http.routers.ehelvetica-collage.middlewares: redirect-to-https
+      traefik.http.routers.ehelvetica-collage-sec.entrypoints: websecure
+      traefik.http.routers.ehelvetica-collage-sec.rule: Host(${HOSTNAME_TRAEFIK_SAN}) && PathPrefix(`/collage`)
+      traefik.http.routers.ehelvetica-collage-sec.middlewares: ehelvetica-collage-compress, ehelvetica-collage-redirect, ehelvetica-collage-strip
+      traefik.http.routers.ehelvetica-collage-sec.tls: "true"
+      traefik.http.routers.ehelvetica-collage-sec.priority: 500
+      traefik.http.middlewares.ehelvetica-collage-redirect.redirectregex.regex: ^(https?://[^/]+/[a-z0-9_]+)$$
+      traefik.http.middlewares.ehelvetica-collage-redirect.redirectregex.replacement: $${1}/
+      traefik.http.middlewares.ehelvetica-collage-compress.compress: "true"
+      traefik.http.middlewares.ehelvetica-collage-strip.stripprefix.prefixes: /collage
+      traefik.enable: "true"
+
+  cantaloupe-webarchives:
+    # note: runs as user 1000:1000 (cantaloupe:cantaloupe inside container)
+    build: .docker/cantaloupe
+    image: registry.gitlab.com/nx-clients/nb/e-helvetica-access/webarchive-collage/env-test/cantaloupe:latest
+    container_name: ${COMPOSE_PROJECT_NAME}-cantaloupe
+    restart: always
+    environment:
+      - JVM_FLAGS=-Xmx1g
+      #-Djava.io.tmpdir=/tmp
+      #- EHELVETICA_ACCESS_AUTHORIZE_URL=http://app:3000/api/users/me
+      #- EHELVETICA_ACCESS_SESSION_KEY=ehs.sid
+    volumes:
+      - ./etc/cantaloupe/cantaloupe.properties:/etc/cantaloupe.properties
+      - ./etc/cantaloupe/delegates.rb:/etc/delegates.rb
+      - ./etc/cantaloupe/delegate-ratios.conf:/etc/delegate-ratios.conf
+    tmpfs:
+      - /tmp:exec,mode=1777
+
+  python:
+    build: .docker/python
+    #environment:
+    #  - VIPS_CONCURRENCY=1
+    volumes:
+      - ./app:/app
+      - ./data:/data
+
+  solr:
+    build: .docker/solr
+    environment:
+      - JAVA_OPTS=-XX:MaxRAM=512m -XX:+UseContainerSupport -XX:MaxRAMPercentage=95 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/data/dumps
+    entrypoint:
+      - bash
+      - "-c"
+      - "solr-precreate app /opt/solr/server/solr/configsets/webarchives; exec solr -f"
+    volumes:
+      - ./etc/solr/configsets/app:/opt/solr/server/solr/configsets/webarchives:ro
+      - ./data/solr:/var/solr
+    restart: unless-stopped

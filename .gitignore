@@ -2,6 +2,7 @@ node_modules/
 data/
 docker-compose.override.yml
 compose.override.yaml
+.env
 .idea
 .css.map
 .js.map
